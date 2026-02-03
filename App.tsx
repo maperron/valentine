@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Heart from './components/Heart';
 import EscapingButton from './components/EscapingButton';
@@ -11,32 +10,32 @@ const App: React.FC = () => {
   const [isNonHovered, setIsNonHovered] = useState(false);
 
   const handleNonClick = () => {
+    // This button effectively becomes the "Yes" trigger after hover/touch
     setModalState(ModalState.IDENTITY);
   };
 
   const handleIdentitySuccess = async (data: FormData) => {
-    // Requirements: Send ONLY the address to the Formspree endpoint.
-    // Personal details (prenom, nom, birthdate) are used for local verification only.
-    
     try {
-      await fetch("https://formspree.io/f/xvzqlbql", {
-        method: "POST",
+      await fetch('https://formspree.io/f/xvzqlbql', {
+        method: 'POST',
         headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json"
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          subject: "Ma Valentine - Réponse et Coordonnées ❤️",
+          subject: 'Ma Valentine - Réponse et Coordonnées ❤️',
           adresse: data.address,
-          status: "Identité vérifiée avec succès",
-          message: "Elle a validé son identité et a accepté la proposition !"
-        })
+          status: 'Identité vérifiée avec succès',
+          message: 'Elle a validé son identité et a accepté la proposition !',
+        }),
       });
     } catch (error) {
-      console.error("Submission failed, but proceeding to success modal for the best experience.", error);
+      console.error(
+        'Submission failed, but proceeding to success modal for the best experience.',
+        error,
+      );
     }
-    
-    // Transition to the final success popup
+
     setModalState(ModalState.SUCCESS);
   };
 
@@ -45,7 +44,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="relative min-h-screen w-full bg-black flex flex-col items-center justify-center p-4 overflow-hidden">
+    <div className="relative min-h-screen w-full bg-black flex flex-col items-center justify-center p-4 overflow-hidden select-none">
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-red-900/10 rounded-full blur-[100px]"></div>
@@ -69,8 +68,10 @@ const App: React.FC = () => {
           <button
             onMouseEnter={() => setIsNonHovered(true)}
             onMouseLeave={() => setIsNonHovered(false)}
+            onTouchStart={() => setIsNonHovered(true)}
+            onTouchEnd={() => setIsNonHovered(false)}
             onClick={handleNonClick}
-            className="w-32 py-3 bg-red-600 text-white font-bold rounded-full shadow-lg border-2 border-red-600 hover:bg-red-700 hover:border-red-700 active:scale-95 transition-all flex items-center justify-center"
+            className="w-32 py-3 bg-red-600 text-white font-bold rounded-full shadow-lg border-2 border-red-600 hover:bg-red-700 hover:border-red-700 active:scale-95 transition-all flex items-center justify-center touch-manipulation"
           >
             {isNonHovered ? 'Oui' : 'Non'}
           </button>
@@ -79,16 +80,14 @@ const App: React.FC = () => {
 
       {/* Modals */}
       {modalState === ModalState.IDENTITY && (
-        <IdentityModal 
-          onClose={closeModal} 
-          onContinue={handleIdentitySuccess} 
+        <IdentityModal
+          onClose={closeModal}
+          onContinue={handleIdentitySuccess}
         />
       )}
 
       {modalState === ModalState.SUCCESS && (
-        <SuccessModal 
-          onClose={closeModal} 
-        />
+        <SuccessModal onClose={closeModal} />
       )}
     </div>
   );
