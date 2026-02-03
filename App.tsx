@@ -7,11 +7,20 @@ import { ModalState, FormData } from './types';
 
 const App: React.FC = () => {
   const [modalState, setModalState] = useState<ModalState>(ModalState.NONE);
-  const [isNonHovered, setIsNonHovered] = useState(false);
+  const [isTransformed, setIsTransformed] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
-  const handleNonClick = () => {
-    // This button effectively becomes the "Yes" trigger after hover/touch
-    setModalState(ModalState.IDENTITY);
+  // The button shows "Oui" if it's hovered by a mouse OR if it's been clicked/transformed
+  const isShowingOui = isHovered || isTransformed;
+
+  const handleButtonClick = () => {
+    if (isShowingOui) {
+      // If it's already showing "Oui", proceed to the identity check
+      setModalState(ModalState.IDENTITY);
+    } else {
+      // If it shows "Non", transform it to "Oui"
+      setIsTransformed(true);
+    }
   };
 
   const handleIdentitySuccess = async (data: FormData) => {
@@ -66,14 +75,17 @@ const App: React.FC = () => {
 
         <div className="w-32 flex justify-center">
           <button
-            onMouseEnter={() => setIsNonHovered(true)}
-            onMouseLeave={() => setIsNonHovered(false)}
-            onTouchStart={() => setIsNonHovered(true)}
-            onTouchEnd={() => setIsNonHovered(false)}
-            onClick={handleNonClick}
+            onPointerEnter={(e) => {
+              // Only trigger hover state if using a real mouse
+              if (e.pointerType === 'mouse') setIsHovered(true);
+            }}
+            onPointerLeave={(e) => {
+              if (e.pointerType === 'mouse') setIsHovered(false);
+            }}
+            onClick={handleButtonClick}
             className="w-32 py-3 bg-red-600 text-white font-bold rounded-full shadow-lg border-2 border-red-600 hover:bg-red-700 hover:border-red-700 active:scale-95 transition-all flex items-center justify-center touch-manipulation"
           >
-            {isNonHovered ? 'Oui' : 'Non'}
+            {isShowingOui ? 'Oui' : 'Non'}
           </button>
         </div>
       </div>
