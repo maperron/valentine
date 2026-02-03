@@ -1,0 +1,8 @@
+{
+  "name": "Copy of Ma Valentine",
+  "description": "A romantic and playful Valentine's day proposal website with interactive elements and identity verification.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
